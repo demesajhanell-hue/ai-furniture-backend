@@ -14,38 +14,30 @@ app.post("/api/chat", async (req, res) => {
   }
 
   try {
-    const response = await fetch(
-      "https://api-inference.huggingface.co/models/microsoft/DialoGPT-small",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.HF_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ inputs: userMsg }),
-      }
-    );
-
-    if (!response.ok) {
-      const text = await response.text();
-      console.error("HF response:", text);
-      return res.json({
-        reply: "⚠️ The AI model might still be starting — please try again shortly.",
-      });
-    }
+    // Make the request to OpenAI's chat model (GPT-3.5 / GPT-4)
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "gpt-3.5-turbo", // or use gpt-4 if you have access
+        messages: [
+          { role: "system", content: "You are a helpful furniture assistant." },
+          { role: "user", content: userMsg },
+        ],
+      }),
+    });
 
     const data = await response.json();
-    const reply =
-      data?.generated_text ||
-      data?.[0]?.generated_text ||
-      "🪑 I can help you pick furniture — can you describe what you’re looking for?";
 
+    let reply = data.choices[0].message.content || "Sorry, I couldn't understand that.";
     res.json({ reply });
   } catch (err) {
     console.error("Error:", err.message);
     res.json({
-      reply:
-        "⚠️ Sorry, I couldn’t connect to the AI model right now. Please try again shortly.",
+      reply: "⚠️ Sorry, I couldn’t connect to the AI server right now. Please try again shortly.",
     });
   }
 });
@@ -55,5 +47,6 @@ app.get("/", (req, res) => {
   res.send("🪑 AI Furniture Finder backend is running!");
 });
 
+// 🚀 Start server
 const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
