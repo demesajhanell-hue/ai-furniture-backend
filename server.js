@@ -32,8 +32,13 @@ app.post("/api/chat", async (req, res) => {
 
     const data = await response.json();
 
-    let reply = data.choices[0].message.content || "Sorry, I couldn't understand that.";
-    res.json({ reply });
+    // Check if the response contains the expected 'choices' array
+    if (data && data.choices && data.choices.length > 0) {
+      const reply = data.choices[0].message.content || "Sorry, I couldn't understand that.";
+      return res.json({ reply });
+    } else {
+      return res.json({ reply: "⚠️ The AI model returned an unexpected response." });
+    }
   } catch (err) {
     console.error("Error:", err.message);
     res.json({
