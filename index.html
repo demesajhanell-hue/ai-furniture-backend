@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Furniture Finder</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- 🌿 Navigation Bar -->
+  <nav class="navbar">
+    <div class="logo">🪑 AI Furniture Finder</div>
+    <ul class="nav-links">
+      <li><a href="#" class="active">Home</a></li>
+      <li><a href="#">Gallery</a></li>
+      <li><a href="#" id="openChatBtn">Start Chat</a></li>
+      <li><a href="#">About</a></li>
+    </ul>
+  </nav>
+
+  <!-- 🛋️ Hero Section -->
+  <section class="hero">
+    <div class="hero-text">
+      <h1>Crafted Furniture<br>Perfectly for You</h1>
+      <p>Discover timeless designs and let our AI help you find furniture that fits your style and space.</p>
+      <a href="#" id="openChatHero" class="btn">Start Chat with AI</a>
+    </div>
+    <div class="hero-image">
+      <img src="images/sofa.jpg" alt="Green Sofa" />
+    </div>
+  </section>
+
+  <!-- 🪵 Featured Products -->
+  <section class="featured">
+    <h2>This Week’s Featured Collection</h2>    
+    <div class="product-grid">
+      <div class="card">
+        <img src="images/Chair.jpg" alt="Chair" />
+        <h3>Modern Wooden Chair</h3>
+        <p>Elegant and comfortable, made with premium oak.</p>
+      </div>
+      <div class="card">
+        <img src="images/lamp.jpg" alt="Lamp" />
+        <h3>Minimalist Lamp</h3>
+        <p>Soft ambient light for your workspace or bedroom.</p>
+      </div>
+      <div class="card">
+        <img src="images/table.jpg" alt="Table" />
+        <h3>Scandinavian Coffee Table</h3>
+        <p>Sleek design with practical storage space.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 💬 Chat Popup -->
+  <div id="chatPopup" class="chat-popup hidden">
+    <div class="chat-container">
+      <header class="chat-header">
+        <h2>💬 AI Furniture Assistant</h2>
+        <p>Your personal guide to choosing the perfect furniture</p>
+        <span id="closeChat" class="close-btn">✖</span>
+      </header>
+
+      <div class="chat-box" id="chatBox">
+        <div class="bot-msg">
+          <p>👋 Hi there! I’m your AI Furniture Assistant.  
+          Describe the kind of furniture you’re looking for — I’ll suggest a few ideas!</p>
+        </div>
+      </div>
+
+      <div class="chat-input">
+        <input type="text" id="userInput" placeholder="e.g. I want a modern wooden chair" />
+        <button id="sendBtn">Send</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2025 AI Furniture Finder — Crafted with ❤️ in VS Code</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
