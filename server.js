@@ -6,22 +6,28 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// 🧠 keep conversation history in memory
 let conversation = [];
 
+// 🧠 Route for chat
 app.post("/api/chat", async (req, res) => {
-  const userMsg = req.body.message || "";
+  const userMsg = req.body.message?.trim() || "";
 
-  // add user message to conversation
+  if (!userMsg) {
+    return res.json({ reply: "Please type something about furniture 😊" });
+  }
+
   conversation.push({ role: "user", content: userMsg });
 
   try {
-    // 🪄 call Hugging Face conversational model
+    // ✅ make sure you added HF_API_KEY in Render environment variables
     const response = await fetch(
       "https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium",
       {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.HF_API_KEY}`,
+        },
         body: JSON.stringify({
           inputs: {
             past_user_inputs: conversation
@@ -41,23 +47,26 @@ app.post("/api/chat", async (req, res) => {
     let reply =
       data?.generated_text ||
       data?.[0]?.generated_text ||
-      "I'm here to help you with your furniture choices!";
+      "🪑 I can help you pick furniture — can you describe what you need?";
 
-    // store the assistant reply
     conversation.push({ role: "assistant", content: reply });
 
-    // trim to last 10 messages (avoid memory overflow)
     if (conversation.length > 20) conversation = conversation.slice(-20);
 
     res.json({ reply });
   } catch (err) {
-    console.error(err);
+    console.error("Error:", err);
     res.json({
       reply:
-        "⚠️ Sorry, I'm having trouble thinking right now. Please try again later.",
+        "⚠️ Sorry, I couldn’t connect to the AI server right now. Please try again shortly.",
     });
   }
 });
 
-const PORT = process.env.PORT || 5000;
+// Optional: homepage
+app.get("/", (req, res) => {
+  res.send("🪑 AI Furniture Finder backend is running!");
+});
+
+const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
