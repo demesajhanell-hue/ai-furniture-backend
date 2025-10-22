@@ -6,8 +6,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-let conversation = [];
-
 // 🧠 Route for chat
 app.post("/api/chat", async (req, res) => {
   const userMsg = req.body.message?.trim() || "";
@@ -16,12 +14,10 @@ app.post("/api/chat", async (req, res) => {
     return res.json({ reply: "Please type something about furniture 😊" });
   }
 
-  conversation.push({ role: "user", content: userMsg });
-
   try {
-    // ✅ make sure you added HF_API_KEY in Render environment variables
+    // ✅ Connect to Hugging Face BlenderBot model
     const response = await fetch(
-      "https://api-inference.huggingface.co/models/microsoft/DialoGPT-medium",
+      "https://api-inference.huggingface.co/models/facebook/blenderbot-400M-distill",
       {
         method: "POST",
         headers: {
@@ -29,29 +25,18 @@ app.post("/api/chat", async (req, res) => {
           Authorization: `Bearer ${process.env.HF_API_KEY}`,
         },
         body: JSON.stringify({
-          inputs: {
-            past_user_inputs: conversation
-              .filter((m) => m.role === "user")
-              .map((m) => m.content),
-            generated_responses: conversation
-              .filter((m) => m.role === "assistant")
-              .map((m) => m.content),
-            text: userMsg,
-          },
+          inputs: userMsg, // simple text input
         }),
       }
     );
 
     const data = await response.json();
 
-    let reply =
+    // 🪑 Pick the AI's generated reply
+    const reply =
       data?.generated_text ||
       data?.[0]?.generated_text ||
-      "🪑 I can help you pick furniture — can you describe what you need?";
-
-    conversation.push({ role: "assistant", content: reply });
-
-    if (conversation.length > 20) conversation = conversation.slice(-20);
+      "I'm here to help you choose the right furniture!";
 
     res.json({ reply });
   } catch (err) {
@@ -63,10 +48,11 @@ app.post("/api/chat", async (req, res) => {
   }
 });
 
-// Optional: homepage
+// 🌐 Homepage
 app.get("/", (req, res) => {
   res.send("🪑 AI Furniture Finder backend is running!");
 });
 
+// 🚀 Start server
 const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));

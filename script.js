@@ -29,11 +29,12 @@ async function sendMessage() {
 
   // Send message to backend AI API
   try {
-    const res = await fetch("https://YOUR-BACKEND-URL.onrender.com/api/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: text })
+    const res = await fetch("https://ai-furniture-backend.onrender.com/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: text }),
     });
+    
 
     const data = await res.json();
     typing.remove();
