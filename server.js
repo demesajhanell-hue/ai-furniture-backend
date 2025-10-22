@@ -14,41 +14,43 @@ app.post("/api/chat", async (req, res) => {
   }
 
   try {
-    // ✅ Use a guaranteed public model
     const response = await fetch(
-      "https://api-inference.huggingface.co/models/facebook/blenderbot-400M-distill",
+      "https://api-inference.huggingface.co/models/microsoft/DialoGPT-small",
       {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${process.env.HF_API_KEY}`,
+          Authorization: `Bearer ${process.env.HF_API_KEY}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ inputs: userMsg }),
       }
     );
 
-    // Sometimes the model is still loading; handle that gracefully
     if (!response.ok) {
       const text = await response.text();
       console.error("HF response:", text);
-      return res.json({ reply: "⚠️ The AI model is still loading — please try again in a few seconds." });
+      return res.json({
+        reply: "⚠️ The AI model might still be starting — please try again shortly.",
+      });
     }
 
     const data = await response.json();
-
-    let reply =
+    const reply =
       data?.generated_text ||
       data?.[0]?.generated_text ||
-      "I'm here to help you find the perfect furniture piece!";
+      "🪑 I can help you pick furniture — can you describe what you’re looking for?";
 
     res.json({ reply });
   } catch (err) {
     console.error("Error:", err.message);
-    res.json({ reply: "⚠️ Could not connect to the AI server. Please try again later." });
+    res.json({
+      reply:
+        "⚠️ Sorry, I couldn’t connect to the AI model right now. Please try again shortly.",
+    });
   }
 });
 
-// Home route
+// Homepage
 app.get("/", (req, res) => {
   res.send("🪑 AI Furniture Finder backend is running!");
 });
